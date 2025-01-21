@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
-import { Copy, RefreshCw, Mail, Inbox, Search, Loader2 } from "lucide-react";
+import { Copy, RefreshCw, Mail, Inbox, Search, Loader2, RotateCw } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -17,6 +17,7 @@ export const TempMail = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [showInbox, setShowInbox] = useState(true);
+  const [changingEmail, setChangingEmail] = useState(false);
   const isMobile = useIsMobile();
 
   useEffect(() => {
@@ -25,22 +26,38 @@ export const TempMail = () => {
 
   useEffect(() => {
     if (account) {
-      refreshMessages(); // Immediate first refresh
-      const interval = setInterval(refreshMessages, 15000); // Reduced interval for more frequent updates
+      refreshMessages();
+      const interval = setInterval(refreshMessages, 15000);
       return () => clearInterval(interval);
     }
   }, [account]);
 
   const initializeAccount = async () => {
     try {
+      setLoading(true);
       const newAccount = await createAccount();
       setAccount(newAccount);
-      setLoading(false);
       toast.success("Email account created successfully!");
     } catch (error) {
-      setLoading(false);
       toast.error("Failed to create email account");
       console.error("Account creation error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleChangeEmail = async () => {
+    try {
+      setChangingEmail(true);
+      setMessages([]);
+      setSelectedEmail(null);
+      await initializeAccount();
+      toast.success("Email address changed successfully!");
+    } catch (error) {
+      toast.error("Failed to change email address");
+      console.error("Email change error:", error);
+    } finally {
+      setChangingEmail(false);
     }
   };
 
@@ -99,7 +116,7 @@ export const TempMail = () => {
   }
 
   const EmailView = () => (
-    <Card className="p-4 h-[600px] overflow-hidden bg-white/50 backdrop-blur-sm border-purple-100 dark:border-gray-700">
+    <Card className="p-4 h-[600px] overflow-hidden bg-white/50 backdrop-blur-sm border-purple-100 dark:border-gray-700 animate-fade-in">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-medium">Message</h2>
         {isMobile && (
@@ -139,7 +156,7 @@ export const TempMail = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white dark:from-gray-900 dark:to-gray-800 p-4">
       <div className="max-w-4xl mx-auto">
-        <Card className="p-6 mb-6 bg-white/50 backdrop-blur-sm border-purple-100 dark:border-gray-700">
+        <Card className="p-6 mb-6 bg-white/50 backdrop-blur-sm border-purple-100 dark:border-gray-700 animate-fade-in">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="space-y-2">
               <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-500">
@@ -158,8 +175,9 @@ export const TempMail = () => {
               <Button
                 variant="outline"
                 size="icon"
-                onClick={copyEmailToClipboard}
+                onClick={() => navigator.clipboard.writeText(account?.address || '')}
                 className="transition-all hover:scale-105 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                title="Copy email address"
               >
                 <Copy className="h-4 w-4" />
               </Button>
@@ -171,8 +189,19 @@ export const TempMail = () => {
                   refreshing ? "animate-spin" : ""
                 }`}
                 disabled={refreshing}
+                title="Refresh messages"
               >
                 <RefreshCw className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handleChangeEmail}
+                className="transition-all hover:scale-105 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                disabled={changingEmail}
+                title="Change email address"
+              >
+                <RotateCw className="h-4 w-4" />
               </Button>
             </div>
           </div>
@@ -190,7 +219,7 @@ export const TempMail = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {(!isMobile || showInbox) && (
-            <Card className="p-4 h-[600px] overflow-hidden bg-white/50 backdrop-blur-sm border-purple-100 dark:border-gray-700">
+            <Card className="p-4 h-[600px] overflow-hidden bg-white/50 backdrop-blur-sm border-purple-100 dark:border-gray-700 animate-fade-in">
               <h2 className="text-lg font-medium mb-4">Inbox</h2>
               <ScrollArea className="h-[520px]">
                 {filteredMessages.length === 0 ? (
