@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
-import { Copy, RefreshCw, Mail, Inbox, Search } from "lucide-react";
+import { Copy, RefreshCw, Mail, Inbox, Search, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -25,9 +25,8 @@ export const TempMail = () => {
 
   useEffect(() => {
     if (account) {
-      const interval = setInterval(() => {
-        refreshMessages();
-      }, 30000);
+      refreshMessages(); // Immediate first refresh
+      const interval = setInterval(refreshMessages, 15000); // Reduced interval for more frequent updates
       return () => clearInterval(interval);
     }
   }, [account]);
@@ -37,9 +36,11 @@ export const TempMail = () => {
       const newAccount = await createAccount();
       setAccount(newAccount);
       setLoading(false);
+      toast.success("Email account created successfully!");
     } catch (error) {
       setLoading(false);
       toast.error("Failed to create email account");
+      console.error("Account creation error:", error);
     }
   };
 
@@ -49,9 +50,10 @@ export const TempMail = () => {
     try {
       const newMessages = await getMessages(account.token);
       setMessages(newMessages);
-      toast.success("Inbox refreshed");
+      console.log("Messages refreshed:", newMessages);
     } catch (error) {
       toast.error("Failed to refresh messages");
+      console.error("Refresh error:", error);
     } finally {
       setRefreshing(false);
     }
@@ -74,6 +76,7 @@ export const TempMail = () => {
       }
     } catch (error) {
       toast.error("Failed to fetch email details");
+      console.error("Email fetch error:", error);
     }
   };
 
@@ -84,17 +87,19 @@ export const TempMail = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background p-4 flex items-center justify-center">
-        <Card className="w-full max-w-4xl p-6">
-          <Skeleton className="h-8 w-48 mb-4" />
-          <Skeleton className="h-32 w-full" />
+      <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white dark:from-gray-900 dark:to-gray-800 p-4 flex items-center justify-center">
+        <Card className="w-full max-w-4xl p-6 animate-pulse">
+          <div className="flex items-center justify-center space-x-4">
+            <Loader2 className="h-6 w-6 animate-spin text-purple-500" />
+            <p className="text-lg font-medium">Creating your temporary email...</p>
+          </div>
         </Card>
       </div>
     );
   }
 
   const EmailView = () => (
-    <Card className="p-4 h-[600px] overflow-hidden">
+    <Card className="p-4 h-[600px] overflow-hidden bg-white/50 backdrop-blur-sm border-purple-100 dark:border-gray-700">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-medium">Message</h2>
         {isMobile && (
@@ -106,7 +111,7 @@ export const TempMail = () => {
       </div>
       <ScrollArea className="h-[520px]">
         {selectedEmail ? (
-          <div className="space-y-4">
+          <div className="space-y-4 animate-fade-in">
             <div>
               <h3 className="text-xl font-medium">{selectedEmail.subject}</h3>
               <p className="text-sm text-muted-foreground">
@@ -132,14 +137,21 @@ export const TempMail = () => {
   );
 
   return (
-    <div className="min-h-screen bg-background p-4">
+    <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white dark:from-gray-900 dark:to-gray-800 p-4">
       <div className="max-w-4xl mx-auto">
-        <Card className="p-4 mb-6">
+        <Card className="p-6 mb-6 bg-white/50 backdrop-blur-sm border-purple-100 dark:border-gray-700">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="space-y-2">
-              <h1 className="text-2xl font-semibold">Temporary Email</h1>
+              <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-500">
+                Temporary Email
+              </h1>
               {account && (
-                <p className="text-muted-foreground break-all">{account.address}</p>
+                <div className="relative group">
+                  <p className="text-lg text-muted-foreground break-all bg-gray-50 dark:bg-gray-800 p-2 rounded-lg">
+                    {account.address}
+                  </p>
+                  <div className="absolute inset-0 bg-purple-100 dark:bg-purple-900/20 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg" />
+                </div>
               )}
             </div>
             <div className="flex gap-2">
@@ -147,7 +159,7 @@ export const TempMail = () => {
                 variant="outline"
                 size="icon"
                 onClick={copyEmailToClipboard}
-                className="transition-all hover:scale-105"
+                className="transition-all hover:scale-105 hover:bg-purple-50 dark:hover:bg-purple-900/20"
               >
                 <Copy className="h-4 w-4" />
               </Button>
@@ -155,9 +167,10 @@ export const TempMail = () => {
                 variant="outline"
                 size="icon"
                 onClick={refreshMessages}
-                className={`transition-all hover:scale-105 ${
+                className={`transition-all hover:scale-105 hover:bg-purple-50 dark:hover:bg-purple-900/20 ${
                   refreshing ? "animate-spin" : ""
                 }`}
+                disabled={refreshing}
               >
                 <RefreshCw className="h-4 w-4" />
               </Button>
@@ -171,13 +184,13 @@ export const TempMail = () => {
             placeholder="Search emails..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="max-w-sm"
+            className="max-w-sm bg-white/50 backdrop-blur-sm border-purple-100 dark:border-gray-700"
           />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {(!isMobile || showInbox) && (
-            <Card className="p-4 h-[600px] overflow-hidden">
+            <Card className="p-4 h-[600px] overflow-hidden bg-white/50 backdrop-blur-sm border-purple-100 dark:border-gray-700">
               <h2 className="text-lg font-medium mb-4">Inbox</h2>
               <ScrollArea className="h-[520px]">
                 {filteredMessages.length === 0 ? (
@@ -191,7 +204,7 @@ export const TempMail = () => {
                       <div
                         key={email.id}
                         onClick={() => handleEmailClick(email)}
-                        className="p-4 rounded-lg border cursor-pointer transition-all hover:bg-accent animate-fade-in"
+                        className="p-4 rounded-lg border border-purple-100 dark:border-gray-700 cursor-pointer transition-all hover:bg-purple-50 dark:hover:bg-purple-900/20 animate-fade-in"
                       >
                         <p className="font-medium truncate">{email.subject}</p>
                         <p className="text-sm text-muted-foreground truncate">
