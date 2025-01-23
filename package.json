@@ -1,7 +1,8 @@
 {
-  "name": "vite_react_shadcn_ts",
+  "name": "swiftmail",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "A modern, secure, and user-friendly temporary email service",
   "type": "module",
   "scripts": {
     "dev": "vite",
