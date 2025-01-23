@@ -1,9 +1,13 @@
 import { Mail, Shield, Clock, RefreshCcw } from "lucide-react";
 import { Button } from "./ui/button";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 export const Header = () => {
+  const location = useLocation();
+  
+  const isActive = (path: string) => location.pathname === path;
+
   return (
     <header className="w-full glass border-b border-purple-100 dark:border-gray-700 sticky top-0 z-50">
       <nav className="max-w-7xl mx-auto px-4 py-4" role="navigation" aria-label="Main navigation">
@@ -61,17 +65,26 @@ export const Header = () => {
             transition={{ duration: 0.5, delay: 0.4 }}
           >
             <Link to="/features">
-              <Button variant="ghost" className="text-sm button-hover">
+              <Button 
+                variant={isActive('/features') ? "default" : "ghost"} 
+                className="text-sm button-hover"
+              >
                 Features
               </Button>
             </Link>
             <Link to="/how-it-works">
-              <Button variant="ghost" className="text-sm button-hover">
+              <Button 
+                variant={isActive('/how-it-works') ? "default" : "ghost"} 
+                className="text-sm button-hover"
+              >
                 How It Works
               </Button>
             </Link>
             <Link to="/faq">
-              <Button variant="ghost" className="text-sm button-hover">
+              <Button 
+                variant={isActive('/faq') ? "default" : "ghost"} 
+                className="text-sm button-hover"
+              >
                 FAQ
               </Button>
             </Link>

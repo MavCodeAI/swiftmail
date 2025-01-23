@@ -1,0 +1,16 @@
+{
+  "name": "SwiftMail - Temporary Email Service",
+  "short_name": "SwiftMail",
+  "description": "Secure and private temporary email service",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#7c3aed",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64",
+      "type": "image/x-icon"
+    }
+  ]
+}

@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
 import { TempMail } from "@/components/TempMail";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -11,16 +11,28 @@ import HowItWorks from "@/pages/HowItWorks";
 import FAQ from "@/pages/FAQ";
 import Privacy from "@/pages/Privacy";
 import { Analytics } from "@/components/Analytics";
+import Blog from "@/pages/Blog";
+import Legal from "@/pages/Legal";
+import Support from "@/pages/Support";
+import Terms from "@/pages/Terms";
+import Cookies from "@/pages/Cookies";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
-const App = () => {
+function App() {
   return (
-    <BrowserRouter>
-      <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClient}>
+      <HashRouter>
         <TooltipProvider>
-          <Analytics />
           <div className="flex flex-col min-h-screen bg-gradient-to-b from-purple-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+            <Analytics />
             <Header />
             <main className="flex-grow">
               <Toaster />
@@ -31,14 +43,20 @@ const App = () => {
                 <Route path="/how-it-works" element={<HowItWorks />} />
                 <Route path="/faq" element={<FAQ />} />
                 <Route path="/privacy" element={<Privacy />} />
+                <Route path="/blog" element={<Blog />} />
+                <Route path="/legal" element={<Legal />} />
+                <Route path="/support" element={<Support />} />
+                <Route path="/terms" element={<Terms />} />
+                <Route path="/cookies" element={<Cookies />} />
+                <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </main>
             <Footer />
           </div>
         </TooltipProvider>
-      </QueryClientProvider>
-    </BrowserRouter>
+      </HashRouter>
+    </QueryClientProvider>
   );
-};
+}
 
 export default App;

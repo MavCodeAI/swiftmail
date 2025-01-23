@@ -8,7 +8,14 @@ const urlsToCache = [
   '/favicon.ico'
 ];
 
-// Install service worker
+// Helper function to check if URL should be cached
+const shouldCache = (url) => {
+  // Only cache same-origin HTTP(S) requests
+  return url.startsWith(self.location.origin) && 
+         (url.startsWith('http://') || url.startsWith('https://'));
+};
+
+// Install event handler
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
@@ -17,64 +24,63 @@ self.addEventListener('install', event => {
         return cache.addAll(urlsToCache);
       })
   );
+  // Activate new service worker immediately
+  self.skipWaiting();
 });
 
-// Fetch event
+// Fetch event handler
 self.addEventListener('fetch', event => {
-  // Skip chrome-extension requests
-  if (event.request.url.startsWith('chrome-extension://')) {
+  // Only handle HTTP(S) requests
+  if (!shouldCache(event.request.url)) {
     return;
   }
 
   event.respondWith(
     caches.match(event.request)
       .then(response => {
-        // Cache hit - return response
         if (response) {
           return response;
         }
 
-        // Clone the request
-        const fetchRequest = event.request.clone();
-
-        return fetch(fetchRequest).then(
-          response => {
-            // Check if valid response
+        return fetch(event.request.clone())
+          .then(response => {
+            // Check if we received a valid response
             if (!response || response.status !== 200 || response.type !== 'basic') {
               return response;
             }
 
-            // Clone the response
-            const responseToCache = response.clone();
-
-            caches.open(CACHE_NAME)
-              .then(cache => {
-                // Don't cache chrome-extension URLs
-                if (!event.request.url.startsWith('chrome-extension://')) {
+            // Cache the response
+            if (shouldCache(event.request.url)) {
+              const responseToCache = response.clone();
+              caches.open(CACHE_NAME)
+                .then(cache => {
                   cache.put(event.request, responseToCache);
-                }
-              });
+                });
+            }
 
             return response;
-          }
-        );
+          })
+          .catch(() => {
+            // Return cached response if fetch fails
+            return caches.match(event.request);
+          });
       })
   );
 });
 
-// Activate event
+// Activate event handler
 self.addEventListener('activate', event => {
-  const cacheWhitelist = [CACHE_NAME];
-
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
         cacheNames.map(cacheName => {
-          if (cacheWhitelist.indexOf(cacheName) === -1) {
+          if (cacheName !== CACHE_NAME) {
             return caches.delete(cacheName);
           }
         })
       );
     })
   );
+  // Claim control immediately
+  self.clients.claim();
 });
