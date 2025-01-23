@@ -12,6 +12,7 @@ import FAQ from "@/pages/FAQ";
 import Privacy from "@/pages/Privacy";
 import { Analytics } from "@/components/Analytics";
 import Blog from "@/pages/Blog";
+import BlogPost from "@/pages/BlogPost";
 import Legal from "@/pages/Legal";
 import Support from "@/pages/Support";
 import Terms from "@/pages/Terms";
@@ -44,6 +45,7 @@ function App() {
                 <Route path="/faq" element={<FAQ />} />
                 <Route path="/privacy" element={<Privacy />} />
                 <Route path="/blog" element={<Blog />} />
+                <Route path="/blog/:slug" element={<BlogPost />} />
                 <Route path="/legal" element={<Legal />} />
                 <Route path="/support" element={<Support />} />
                 <Route path="/terms" element={<Terms />} />
