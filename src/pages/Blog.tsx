@@ -33,7 +33,7 @@ const blogPosts = [
   }
 ];
 
-const Blog = () => {
+export function Blog() {
   return (
     <>
       <Helmet>
@@ -110,5 +110,3 @@ const Blog = () => {
     </>
   );
 };
-
-export default Blog;

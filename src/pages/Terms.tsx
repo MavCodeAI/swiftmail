@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 
-export default function Terms() {
+export function Terms() {
   return (
     <div className="container mx-auto px-4 py-16">
       <motion.div

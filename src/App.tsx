@@ -1,64 +1,65 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
 import { TempMail } from "@/components/TempMail";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
-import Features from "@/pages/Features";
-import HowItWorks from "@/pages/HowItWorks";
-import FAQ from "@/pages/FAQ";
-import Privacy from "@/pages/Privacy";
+import { Layout } from "@/components/Layout";
 import { Analytics } from "@/components/Analytics";
-import Blog from "@/pages/Blog";
-import BlogPost from "@/pages/BlogPost";
-import Legal from "@/pages/Legal";
-import Support from "@/pages/Support";
-import Terms from "@/pages/Terms";
-import Cookies from "@/pages/Cookies";
+import { Toaster } from "sonner";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { HashRouter, Routes, Route } from "react-router-dom";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { ThemeProvider } from "@/components/theme-provider";
+import { SEO } from "@/components/SEO";
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 1,
-      refetchOnWindowFocus: false,
-    },
-  },
-});
+// Pages
+import { Home } from "@/pages/Home";
+import { Features } from "@/pages/Features";
+import { HowItWorks } from "@/pages/HowItWorks";
+import { FAQ } from "@/pages/FAQ";
+import { Privacy } from "@/pages/Privacy";
+import { Terms } from "@/pages/Terms";
+import { CookiePolicy } from "@/pages/CookiePolicy";
+import { About } from "@/pages/About";
+import { Contact } from "@/pages/Contact";
+import { Blog } from "@/pages/Blog";
+import { Support } from "@/pages/Support";
 
-function App() {
+const queryClient = new QueryClient();
+
+export default function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <HashRouter>
+    <ThemeProvider defaultTheme="dark" storageKey="swiftmail-theme">
+      <QueryClientProvider client={queryClient}>
         <TooltipProvider>
-          <div className="flex flex-col min-h-screen bg-gradient-to-b from-purple-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-            <Analytics />
-            <Header />
-            <main className="flex-grow">
-              <Toaster />
-              <Sonner />
+          <HashRouter>
+            <SEO />
+            <Layout>
               <Routes>
-                <Route path="/" element={<TempMail />} />
+                <Route path="/" element={<Home />} />
                 <Route path="/features" element={<Features />} />
                 <Route path="/how-it-works" element={<HowItWorks />} />
                 <Route path="/faq" element={<FAQ />} />
                 <Route path="/privacy" element={<Privacy />} />
-                <Route path="/blog" element={<Blog />} />
-                <Route path="/blog/:slug" element={<BlogPost />} />
-                <Route path="/legal" element={<Legal />} />
-                <Route path="/support" element={<Support />} />
                 <Route path="/terms" element={<Terms />} />
-                <Route path="/cookies" element={<Cookies />} />
-                <Route path="*" element={<Navigate to="/" replace />} />
+                <Route path="/cookie-policy" element={<CookiePolicy />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/blog" element={<Blog />} />
+                <Route path="/support" element={<Support />} />
               </Routes>
-            </main>
-            <Footer />
-          </div>
+            </Layout>
+            <Analytics />
+            <Toaster 
+              position="bottom-right" 
+              toastOptions={{
+                style: {
+                  background: 'rgba(255, 255, 255, 0.9)',
+                  backdropFilter: 'blur(8px)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                },
+                className: 'dark:bg-gray-800/90 dark:text-white',
+              }}
+            />
+          </HashRouter>
         </TooltipProvider>
-      </HashRouter>
-    </QueryClientProvider>
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 }
-
-export default App;

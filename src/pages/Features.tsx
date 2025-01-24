@@ -34,7 +34,7 @@ const features = [
   },
 ];
 
-export default function Features() {
+export function Features() {
   return (
     <div className="container mx-auto px-4 py-16">
       <motion.div

@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 
-const Support = () => {
+export function Support() {
   return (
     <div className="container mx-auto px-4 py-8">
       <motion.div
@@ -98,6 +98,4 @@ const Support = () => {
       </motion.div>
     </div>
   );
-};
-
-export default Support;
+}

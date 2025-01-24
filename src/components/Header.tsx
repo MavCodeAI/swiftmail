@@ -1,96 +1,60 @@
-import { Mail, Shield, Clock, RefreshCcw } from "lucide-react";
+import { Link } from "react-router-dom";
+import { ModeToggle } from "./mode-toggle";
 import { Button } from "./ui/button";
-import { motion } from "framer-motion";
-import { Link, useLocation } from "react-router-dom";
 
-export const Header = () => {
-  const location = useLocation();
-  
-  const isActive = (path: string) => location.pathname === path;
-
+export function Header() {
   return (
-    <header className="w-full glass border-b border-purple-100 dark:border-gray-700 sticky top-0 z-50">
-      <nav className="max-w-7xl mx-auto px-4 py-4" role="navigation" aria-label="Main navigation">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <motion.div 
-            className="flex items-center space-x-3"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <Link to="/" className="flex items-center space-x-3">
-              <div className="relative">
-                <Mail className="h-8 w-8 text-purple-600 dark:text-purple-400 animate-float" />
-                <motion.div
-                  className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full"
-                  animate={{ scale: [1, 1.2, 1] }}
-                  transition={{ repeat: Infinity, duration: 2 }}
+    <header className="sticky top-0 z-50 w-full border-b border-white/10 backdrop-blur-sm bg-white/50 dark:bg-gray-900/50">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex h-16 items-center justify-between">
+          <div className="flex items-center">
+            <Link to="/" className="flex items-center space-x-2">
+              <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-600 dark:from-purple-400 dark:to-blue-400">
+                SwiftMail
+              </span>
+            </Link>
+          </div>
+
+          <nav className="hidden md:flex items-center space-x-8">
+            <Link to="/features" className="text-gray-600 hover:text-purple-600 dark:text-gray-300 dark:hover:text-purple-400">
+              Features
+            </Link>
+            <Link to="/how-it-works" className="text-gray-600 hover:text-purple-600 dark:text-gray-300 dark:hover:text-purple-400">
+              How It Works
+            </Link>
+            <Link to="/faq" className="text-gray-600 hover:text-purple-600 dark:text-gray-300 dark:hover:text-purple-400">
+              FAQ
+            </Link>
+            <ModeToggle />
+          </nav>
+
+          <div className="flex md:hidden">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-gray-600 hover:text-purple-600 dark:text-gray-300 dark:hover:text-purple-400"
+              onClick={() => {
+                // Toggle mobile menu
+              }}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="w-6 h-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
                 />
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 via-blue-500 to-purple-600 animate-gradient">
-                  SwiftMail
-                </h1>
-                <p className="text-sm text-muted-foreground">
-                  Secure Temporary Email Service
-                </p>
-              </div>
-            </Link>
-          </motion.div>
-
-          <motion.div 
-            className="flex flex-wrap justify-center gap-4 sm:gap-6"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-              <Shield className="h-4 w-4 text-green-500" />
-              <span>Secure & Private</span>
-            </div>
-            <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-              <Clock className="h-4 w-4 text-blue-500" />
-              <span>Instant Access</span>
-            </div>
-            <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-              <RefreshCcw className="h-4 w-4 text-purple-500" />
-              <span>Auto Refresh</span>
-            </div>
-          </motion.div>
-
-          <motion.div 
-            className="flex items-center space-x-4"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-          >
-            <Link to="/features">
-              <Button 
-                variant={isActive('/features') ? "default" : "ghost"} 
-                className="text-sm button-hover"
-              >
-                Features
-              </Button>
-            </Link>
-            <Link to="/how-it-works">
-              <Button 
-                variant={isActive('/how-it-works') ? "default" : "ghost"} 
-                className="text-sm button-hover"
-              >
-                How It Works
-              </Button>
-            </Link>
-            <Link to="/faq">
-              <Button 
-                variant={isActive('/faq') ? "default" : "ghost"} 
-                className="text-sm button-hover"
-              >
-                FAQ
-              </Button>
-            </Link>
-          </motion.div>
+              </svg>
+            </Button>
+          </div>
         </div>
-      </nav>
+      </div>
     </header>
   );
-};
+}
