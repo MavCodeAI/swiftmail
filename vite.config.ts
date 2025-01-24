@@ -13,6 +13,18 @@ export default defineConfig({
     },
     react()
   ],
+  optimizeDeps: {
+    include: [
+      "@mdx-js/react",
+      "@radix-ui/react-dialog",
+      "@radix-ui/react-dropdown-menu",
+      "@radix-ui/react-tooltip",
+      "framer-motion",
+      "lucide-react",
+      "sonner",
+    ],
+    exclude: [],
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
@@ -21,8 +33,26 @@ export default defineConfig({
   server: {
     port: 3000,
     host: true,
+    open: true,
+    hmr: {
+      overlay: true,
+    },
   },
-  optimizeDeps: {
-    include: ['@mdx-js/react'],
+  build: {
+    outDir: "dist",
+    sourcemap: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          "react-vendor": ["react", "react-dom"],
+          "ui-vendor": [
+            "@radix-ui/react-dialog",
+            "@radix-ui/react-dropdown-menu",
+            "@radix-ui/react-tooltip",
+          ],
+          "animation-vendor": ["framer-motion"],
+        },
+      },
+    },
   },
 });
